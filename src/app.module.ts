@@ -5,6 +5,7 @@ import { envValidationSchema } from './config/validation';
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule } from '@nestjs/cache-manager';
 import { HealthController } from './health/health.controller';
+import { CepModule } from './cep/cep.module';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { HealthController } from './health/health.controller';
         isGlobal: true,
       }),
     }),
-    // CepModule virá depois, quando fizermos a lógica de negócio
+    CepModule,
   ],
   controllers: [HealthController],
 })
