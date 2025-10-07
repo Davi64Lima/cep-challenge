@@ -4,8 +4,8 @@ import configuration from './config/configuration';
 import { envValidationSchema } from './config/validation';
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule } from '@nestjs/cache-manager';
-import { HealthController } from './health/health.controller';
 import { CepModule } from './cep/cep.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ import { CepModule } from './cep/cep.module';
         isGlobal: true,
       }),
     }),
+    HealthModule,
   ],
-  controllers: [HealthController],
 })
 export class AppModule {}

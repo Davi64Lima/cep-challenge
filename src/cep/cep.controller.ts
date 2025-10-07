@@ -13,8 +13,23 @@ export class CepController {
   @Get(':cep')
   @ApiOperation({
     summary: 'Consultar endereço por CEP',
-    description:
-      'Retorna os dados do endereço correspondente ao CEP informado. Aceita CEP com ou sem hífen (formato: 12345-678 ou 12345678).',
+    description: `
+      Busca informações de endereço a partir de um CEP brasileiro.
+      
+      **Funcionamento:**
+      - Alterna aleatoriamente entre ViaCEP (60%) e BrasilAPI (40%)
+      - Em caso de falha, tenta automaticamente o provedor alternativo
+      - Resultados são armazenados em cache por 24 horas
+      - Tempo máximo de resposta: 5 segundos por provedor
+      
+      **Formato do CEP:**
+      - Com hífen: 01310-100
+      - Sem hífen: 01310100
+      
+      **Provedores utilizados:**
+      - [ViaCEP](https://viacep.com.br/)
+      - [BrasilAPI](https://brasilapi.com.br/)
+    `,
   })
   @ApiParam({
     name: 'cep',

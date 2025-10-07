@@ -6,6 +6,7 @@ import { RequestIdInterceptor } from './common/interceptors/request-id.intercept
 import { LoggingInterceptor } from './common/interceptors/logging.interceptors';
 import configuration from './config/configuration';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
+import { swaggerConfig } from './swagger/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,13 +27,25 @@ async function bootstrap() {
   // Swagger
   if (configObj.enableSwagger) {
     const docConfig = new DocumentBuilder()
-      .setTitle('CEP Service')
-      .setDescription('API de consulta de CEP com provedores externos')
-      .setVersion('1.0.0')
-      .addTag('cep', 'Operações relacionadas à consulta de CEP')
+      .setTitle('CEP API')
+      .setDescription(
+        'API REST que consulta informações de CEP alternando aleatoriamente entre ViaCEP e BrasilAPI com sistema de fallback automático.',
+      )
+      .setVersion('1.0')
+      .addTag('Health', 'Verificação de saúde da API')
+      .setContact(
+        'Davi Lima ',
+        'https://github.com/Davi64lima/cep-challenge',
+        'devdavi64lima@gmail.com',
+      )
+      .setLicense('MIT', 'https://opensource.org/licenses/MIT')
+      .addServer('http://localhost:3000', 'Ambiente de Desenvolvimento') // TODO: URL do ambiente de desenvolvimento
+      .addServer('https://api.seudominio.com', 'Ambiente de Produção') // TODO: URL do ambiente de produção
       .build();
+
     const document = SwaggerModule.createDocument(app, docConfig);
-    SwaggerModule.setup(configObj.swaggerPath, app, document);
+
+    SwaggerModule.setup('docs', app, document, swaggerConfig);
   }
 
   const port = configObj.port;
