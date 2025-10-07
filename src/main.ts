@@ -11,14 +11,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configObj = configuration();
 
-  // Pipes globais de validação
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-
   // Interceptors globais
   app.useGlobalInterceptors(
     new RequestIdInterceptor(),
     new LoggingInterceptor(),
   );
+
+  // Pipes globais de validação
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // Configurar filtro de exceção global
   app.useGlobalFilters(new HttpExceptionFilter());

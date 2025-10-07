@@ -32,6 +32,13 @@ export class ErrorResponseDto {
   details?: Record<string, any> | null;
 
   @ApiProperty({
+    description: 'ID único da requisição para rastreamento',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+    type: String,
+  })
+  request_id: string;
+
+  @ApiProperty({
     description: 'Timestamp do erro no formato ISO 8601',
     example: '2025-10-07T10:30:00.000Z',
     type: String,

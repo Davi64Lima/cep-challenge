@@ -1,4 +1,4 @@
-import { ErrorCode } from '../../dto/error-response.dto';
+import { ErrorCode } from '../../../common/dto/error-response.dto';
 
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   [ErrorCode.INVALID_CEP]:

@@ -1,24 +1,26 @@
 import {
-  CallHandler,
-  ExecutionContext,
   Injectable,
   NestInterceptor,
+  ExecutionContext,
+  CallHandler,
 } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { Observable } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RequestIdInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler) {
-    const ctx = context.switchToHttp();
-    const req = ctx.getRequest<Request & { id?: string }>();
-    const res = ctx.getResponse();
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const request = context.switchToHttp().getRequest();
 
-    let requestId = req.headers['x-request-id'] as string | undefined;
-    if (!requestId) requestId = randomUUID();
+    // Gerar ou usar request_id existente do header
+    const requestId = request.headers['x-request-id'] || uuidv4();
 
-    // Anexa no request e response header
-    (req as any).id = requestId;
-    res.setHeader('x-request-id', requestId);
+    // Armazenar no request para uso posterior
+    request.requestId = requestId;
+
+    // Adicionar ao response header
+    const response = context.switchToHttp().getResponse();
+    response.setHeader('X-Request-ID', requestId);
 
     return next.handle();
   }

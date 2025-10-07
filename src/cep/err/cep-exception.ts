@@ -1,5 +1,8 @@
 import { HttpException } from '@nestjs/common';
-import { ErrorCode, ErrorResponseDto } from '../dto/error-response.dto';
+import {
+  ErrorCode,
+  ErrorResponseDto,
+} from '../../common/dto/error-response.dto';
 import {
   ERROR_MESSAGES,
   HTTP_STATUS_BY_ERROR_CODE,
@@ -18,6 +21,7 @@ export class CepException extends HttpException {
       code,
       message,
       details: details || null,
+      request_id: '', // Será preenchido pelo HttpExceptionFilter
     };
 
     super(errorResponse, status);

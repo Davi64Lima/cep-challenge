@@ -1,12 +1,78 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { CepService } from './cep.service';
+import { AddressResponseDto } from '../common/dto/address-response.dto';
+import { ErrorResponseDto, ErrorCode } from '../common/dto/error-response.dto';
+import { CepValidationPipe } from '../common/pipes/cep-validation.pipe';
 
+@ApiTags('cep')
 @Controller('cep')
 export class CepController {
   constructor(private readonly cepService: CepService) {}
 
   @Get(':cep')
-  findOne(@Param('cep') cep: string) {
-    return this.cepService.findByCep(+cep);
+  @ApiOperation({
+    summary: 'Consultar endereço por CEP',
+    description:
+      'Retorna os dados do endereço correspondente ao CEP informado. Aceita CEP com ou sem hífen (formato: 12345-678 ou 12345678).',
+  })
+  @ApiParam({
+    name: 'cep',
+    description: 'CEP a ser consultado (8 dígitos, com ou sem hífen)',
+    example: '01310-100',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Endereço encontrado com sucesso',
+    type: AddressResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'CEP inválido',
+    type: ErrorResponseDto,
+    example: {
+      code: ErrorCode.INVALID_CEP,
+      message:
+        'CEP inválido. O CEP deve conter 8 dígitos numéricos (com ou sem hífen).',
+      details: {
+        received: 'abc',
+        expectedFormat: '12345-678 ou 12345678',
+      },
+      request_id: '550e8400-e29b-41d4-a716-446655440000',
+      timestamp: '2025-10-07T10:30:00.000Z',
+      path: '/api/v1/cep/abc',
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'CEP não encontrado',
+    type: ErrorResponseDto,
+    example: {
+      code: ErrorCode.CEP_NOT_FOUND,
+      message: 'CEP não encontrado em nenhum dos provedores disponíveis.',
+      details: {
+        cep: '99999999',
+        attempts: 3,
+      },
+      request_id: '550e8400-e29b-41d4-a716-446655440000',
+      timestamp: '2025-10-07T10:30:00.000Z',
+      path: '/api/v1/cep/99999999',
+    },
+  })
+  @ApiResponse({
+    status: 503,
+    description: 'Serviços upstream indisponíveis',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 504,
+    description: 'Timeout ao consultar provedores',
+    type: ErrorResponseDto,
+  })
+  async findAddressByCep(
+    @Param('cep', CepValidationPipe) cep: string,
+  ): Promise<AddressResponseDto> {
+    return this.cepService.findAddressByCep(cep);
   }
 }
