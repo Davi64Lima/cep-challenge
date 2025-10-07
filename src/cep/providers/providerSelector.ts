@@ -14,6 +14,7 @@ export interface ProviderSelection {
 export class ProviderSelectorService {
   private readonly logger = new Logger(ProviderSelectorService.name);
   private requestCount = 0;
+
   private randomGenerator: () => number;
 
   constructor() {

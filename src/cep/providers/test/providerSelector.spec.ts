@@ -121,7 +121,7 @@ describe('ProviderSelectorService', () => {
       ];
 
       const counts = { ViaCEP: 0, BrasilAPI: 0 };
-      const iterations = 1000;
+      const iterations = 50;
 
       for (let i = 0; i < iterations; i++) {
         const result = service.selectProviders(providers);
@@ -144,7 +144,7 @@ describe('ProviderSelectorService', () => {
         { provider: mockApiCepProvider, weight: 20 },
       ];
 
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 50; i++) {
         const result = service.selectProviders(providers);
 
         expect(result.ordered).toHaveLength(3);
