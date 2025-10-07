@@ -14,6 +14,7 @@ import { CepModule } from './cep/cep.module';
       load: [configuration],
       validationSchema: envValidationSchema,
     }),
+    CepModule,
     HttpModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -28,7 +29,6 @@ import { CepModule } from './cep/cep.module';
         isGlobal: true,
       }),
     }),
-    CepModule,
   ],
   controllers: [HealthController],
 })
