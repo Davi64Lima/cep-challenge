@@ -69,6 +69,9 @@ describe('CepService (Integração - Providers Mockados)', () => {
     providerSelector = module.get<ProviderSelectorService>(
       ProviderSelectorService,
     );
+
+    // Forçar ViaCEP como primário para todos os testes (padrão)
+    providerSelector.setRandomGenerator(() => 0.3); // 30% -> ViaCEP primário
   });
 
   afterEach(() => {
@@ -159,6 +162,8 @@ describe('CepService (Integração - Providers Mockados)', () => {
       const result = await service.findAddressByCep('01310100');
 
       expect(result).toEqual(mockAddress);
+      expect(viaCepProvider.findByCep).toHaveBeenCalled();
+      expect(brasilApiProvider.findByCep).toHaveBeenCalled();
     });
   });
 
@@ -273,6 +278,44 @@ describe('CepService (Integração - Providers Mockados)', () => {
       expect(cacheManager.get).toHaveBeenCalledWith('cep:01310100');
       expect(viaCepProvider.findByCep).not.toHaveBeenCalled();
       expect(brasilApiProvider.findByCep).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Integração com ProviderSelector', () => {
+    it('deve respeitar ordem retornada pelo selector', async () => {
+      cacheManager.get.mockResolvedValue(null);
+
+      // Forçar BrasilAPI como primário
+      providerSelector.setRandomGenerator(() => 0.8); // 80% -> BrasilAPI primário
+
+      jest.spyOn(brasilApiProvider, 'findByCep').mockResolvedValue(mockAddress);
+
+      const result = await service.findAddressByCep('01310100');
+
+      expect(result).toEqual(mockAddress);
+      expect(brasilApiProvider.findByCep).toHaveBeenCalledWith('01310100');
+      expect(viaCepProvider.findByCep).not.toHaveBeenCalled();
+    });
+
+    it('deve tentar ambos providers na ordem correta quando há falha', async () => {
+      cacheManager.get.mockResolvedValue(null);
+
+      // Forçar BrasilAPI como primário
+      providerSelector.setRandomGenerator(() => 0.8);
+
+      jest
+        .spyOn(brasilApiProvider, 'findByCep')
+        .mockRejectedValue(
+          new CepException(ErrorCode.CEP_NOT_FOUND, {}, 'Não encontrado'),
+        );
+
+      jest.spyOn(viaCepProvider, 'findByCep').mockResolvedValue(mockAddress);
+
+      const result = await service.findAddressByCep('01310100');
+
+      expect(result).toEqual(mockAddress);
+      expect(brasilApiProvider.findByCep).toHaveBeenCalled();
+      expect(viaCepProvider.findByCep).toHaveBeenCalled();
     });
   });
 });

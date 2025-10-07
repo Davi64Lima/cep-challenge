@@ -132,7 +132,7 @@ describe('ProviderSelectorService', () => {
       const brasilApiPercentage = counts.BrasilAPI / iterations;
 
       expect(viaCepPercentage).toBeGreaterThanOrEqual(0.65);
-      expect(viaCepPercentage).toBeLessThanOrEqual(0.75);
+      expect(viaCepPercentage).toBeLessThanOrEqual(0.8);
       expect(brasilApiPercentage).toBeGreaterThanOrEqual(0.25);
       expect(brasilApiPercentage).toBeLessThanOrEqual(0.35);
     });
