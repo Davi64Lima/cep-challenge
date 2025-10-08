@@ -29,7 +29,7 @@ async function bootstrap() {
     const docConfig = new DocumentBuilder()
       .setTitle('CEP API')
       .setDescription(
-        'API REST que consulta informações de CEP alternando aleatoriamente entre ViaCEP e BrasilAPI com sistema de fallback automático.',
+        'API REST que consulta informações de CEP alternando entre ViaCEP e BrasilAPI com sistema de fallback automático.',
       )
       .setVersion('1.0')
       .addTag('Health', 'Verificação de saúde da API')

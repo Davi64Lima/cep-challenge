@@ -17,7 +17,7 @@ export class CepController {
       Busca informações de endereço a partir de um CEP brasileiro.
       
       **Funcionamento:**
-      - Alterna aleatoriamente entre ViaCEP (60%) e BrasilAPI (40%)
+      - Alterna entre ViaCEP (70%) e BrasilAPI (30%)
       - Em caso de falha, tenta automaticamente o provedor alternativo
       - Resultados são armazenados em cache por 24 horas
       - Tempo máximo de resposta: 5 segundos por provedor

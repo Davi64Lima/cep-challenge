@@ -29,7 +29,7 @@ describe('ProviderSelectorService', () => {
     service = new ProviderSelectorService();
   });
 
-  describe('com aleatoriedade controlada (testes determinísticos)', () => {
+  describe('com controle (testes determinísticos)', () => {
     it('deve selecionar primeiro provider quando random < primeiro peso', () => {
       const mockRandom = jest.fn().mockReturnValue(0.3);
       service.setRandomGenerator(mockRandom);
