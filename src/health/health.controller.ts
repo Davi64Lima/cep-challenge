@@ -1,10 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiExcludeEndpoint,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
@@ -56,20 +51,6 @@ export class HealthController {
           },
         },
         error: {},
-        details: {
-          viacep: {
-            status: 'up',
-          },
-          brasilapi: {
-            status: 'up',
-          },
-          memory_heap: {
-            status: 'up',
-          },
-          memory_rss: {
-            status: 'up',
-          },
-        },
       },
     },
   })
@@ -110,8 +91,8 @@ export class HealthController {
       },
     },
   })
-  check() {
-    return this.health.check([
+  async check() {
+    const health = await this.health.check([
       () =>
         this.http.pingCheck('viacep', 'https://viacep.com.br/ws/01310100/json'),
       () =>
@@ -122,17 +103,11 @@ export class HealthController {
       () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024), // 150MB
       () => this.memory.checkRSS('memory_rss', 150 * 1024 * 1024), // 150MB
     ]);
-  }
-
-  @Get('ready')
-  @ApiExcludeEndpoint() // Não aparece no Swagger
-  async readiness() {
-    return { status: 'ready' };
-  }
-
-  @Get('live')
-  @ApiExcludeEndpoint()
-  async liveness() {
-    return { status: 'alive' };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { details, ...healthWithoutDetails } = health;
+    return {
+      ...healthWithoutDetails,
+      timestamp: new Date().toISOString(),
+    };
   }
 }

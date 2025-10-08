@@ -450,7 +450,7 @@ HTTP_TIMEOUT_MS=2000              # Timeout global
 
 # Cache
 ENABLE_CACHE=true                 # Ativar/desativar cache
-CACHE_TTL_SEC=900                 # TTL do cache (15min)
+CACHE_TTL_SEC=300                 # TTL do cache (15min)
 
 # Observabilidade
 LOG_LEVEL=info                    # fatal | error | warn | info | debug | trace

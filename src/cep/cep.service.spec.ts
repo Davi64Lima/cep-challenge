@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CepService } from './cep.service';
 import { ProviderSelectorService } from './providers/providerSelector';
 import { ViaCepProvider } from './providers/viacep.provider';

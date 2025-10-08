@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
-import { Cache } from 'cache-manager';
 import { AddressResponseDto } from '../common/dto/address-response.dto';
 import { ViaCepProvider } from './providers/viacep.provider';
 import { BrasilApiProvider } from './providers/brasilapi.provider';
@@ -12,6 +10,7 @@ import {
 import { CepException } from './err/cep-exception';
 import { ErrorCode } from '../common/dto/error-response.dto';
 import { ICepProvider } from './interfaces/cep-provider.interface';
+import { ICacheProvider } from '../cache/interfaces/cache-provider.interface';
 
 interface ProviderError {
   provider: string;
@@ -23,10 +22,9 @@ interface ProviderError {
 export class CepService {
   private readonly logger = new Logger(CepService.name);
   private readonly providersWithWeights: ProviderWithWeight[];
-  private readonly CACHE_TTL = 60 * 60 * 24; // 24 horas em segundos
 
   constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject('CACHE_PROVIDER') private cache: ICacheProvider,
     private readonly viaCepProvider: ViaCepProvider,
     private readonly brasilApiProvider: BrasilApiProvider,
     private readonly providerSelector: ProviderSelectorService,
@@ -41,8 +39,7 @@ export class CepService {
     const cacheKey = `cep:${cep}`;
 
     // 1. Tentar buscar do cache
-    const cachedAddress =
-      await this.cacheManager.get<AddressResponseDto>(cacheKey);
+    const cachedAddress = await this.cache.get<AddressResponseDto>(cacheKey);
     if (cachedAddress) {
       this.logger.log(`CEP ${cep} encontrado no cache`);
       return cachedAddress;
@@ -65,17 +62,16 @@ export class CepService {
         const result = await provider.findByCep(cep);
         this.logger.log(`CEP ${cep} encontrado em ${provider.name}`);
 
-        // 4. Gravar no cache antes de retornar
-        await this.cacheManager.set(cacheKey, result, this.CACHE_TTL);
-        this.logger.debug(
-          `CEP ${cep} gravado no cache (TTL: ${this.CACHE_TTL}s)`,
-        );
-
-        return {
+        const response = {
           ...result,
-          source: 'viacep',
+          source: provider.name,
           fetched_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
         };
+
+        // 4. Gravar no cache antes de retornar
+        await this.cache.set(cacheKey, response);
+
+        return response;
       } catch (error) {
         if (error instanceof CepException) {
           const errorResponse = error.getResponse() as any;

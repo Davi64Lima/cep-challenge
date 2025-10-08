@@ -3,9 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { envValidationSchema } from './config/validation';
 import { HttpModule } from '@nestjs/axios';
-import { CacheModule } from '@nestjs/cache-manager';
 import { CepModule } from './cep/cep.module';
 import { HealthModule } from './health/health.module';
+import { CacheModule as CacheOtherProviders } from './cache/cache.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -22,14 +23,13 @@ import { HealthModule } from './health/health.module';
         maxRedirects: 0,
       }),
     }),
-    CacheModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        ttl: config.get<number>('cacheTtlSec', 900) * 1000, // ms
-        isGlobal: true,
-      }),
-    }),
+    CacheOtherProviders,
     HealthModule,
+    CacheModule.register({
+      max: 1000,
+    }),
   ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
