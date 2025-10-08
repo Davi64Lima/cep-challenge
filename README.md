@@ -22,8 +22,6 @@
 - [Tratamento de Erros](#️-tratamento-de-erros)
 - [Variáveis de Ambiente](#-variáveis-de-ambiente)
 - [Docker](#-docker)
-- [Roadmap](#️-roadmap)
-- [Licença](#-licença)
 
 ---
 
@@ -33,7 +31,7 @@ API desenvolvida em **NestJS** que resolve o desafio de consultar CEPs brasileir
 
 - ✅ **Alternância aleatória** entre provedores (ViaCEP 70% / BrasilAPI 30%)
 - ✅ **Fallback automático** em caso de falha
-- ✅ **Cache inteligente** com TTL de 24 horas
+- ✅ **Cache inteligente** com TTL de 5 minutos
 - ✅ **Tratamento granular** de erros (404, 5xx, timeout)
 - ✅ **Validação robusta** de CEP
 - ✅ **Documentação Swagger** interativa
@@ -92,7 +90,7 @@ Todos os erros seguem o formato **RFC 7807** (Problem Details):
 ### 🚀 Performance e Cache
 
 - **Cache em memória** com `cache-manager`
-- **TTL padrão:** 24 horas (configurável via `.env`)
+- **TTL padrão:** 5 minutos (configurável via `.env`)
 - **Máximo de itens:** 1000 (evita memory leak)
 - **Hit rate esperado:** ~80% após warm-up
 
@@ -492,26 +490,6 @@ docker-compose logs -f
 # Parar
 docker-compose down
 ```
-
----
-
-## 🗺️ Roadmap
-
-- [ ] **Adicionar novos providers** (ApiCEP, PostMon)
-- [ ] **Implementar Redis** para cache distribuído
-- [ ] **Métricas Prometheus** para monitoramento
-- [ ] **Rate limiting** por IP
-- [ ] **Circuit breaker** para providers
-- [ ] **Retry exponencial** com backoff
-- [ ] **GraphQL** como alternativa ao REST
-- [ ] **Webhooks** para notificações de falha
-- [ ] **Admin dashboard** para métricas
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença **MIT**. Veja o arquivo LICENSE para mais detalhes.
 
 ---
 
