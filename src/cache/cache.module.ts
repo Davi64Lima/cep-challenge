@@ -8,7 +8,7 @@ import { CacheConfig, defaultCacheConfig } from './cache.config';
   imports: [
     NestCacheModule.register({
       ttl: defaultCacheConfig.ttl * 1000, // Convert to milliseconds
-      max: 100, // Maximum number of items in cache
+      max: 1000, // Maximum number of items in cache
     }),
   ],
   providers: [
