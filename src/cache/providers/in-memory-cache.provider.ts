@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Logger } from '@nestjs/common';
 import { ICacheProvider } from '../interfaces/cache-provider.interface';
@@ -8,20 +9,19 @@ import { defaultCacheConfig as config } from '../cache.config';
 export class InMemoryCacheProvider implements ICacheProvider {
   private readonly logger = new Logger(InMemoryCacheProvider.name);
 
-  constructor(private readonly cacheManager: Cache) {}
+  constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
-  async get<T>(key: string): Promise<T | null> {
+  async get(key: string): Promise<any> {
     try {
-      const value = await this.cacheManager.get<T>(key);
+      const value = await this.cacheManager.get(key);
 
       if (value) {
         this.logger.debug(`Cache HIT: ${key}`);
+        return value;
       } else {
         this.logger.debug(`Cache MISS: ${key}`);
         return null;
       }
-
-      return value;
     } catch (error) {
       this.logger.error(`Error getting cache key ${key}:`, error);
       return null;
@@ -31,7 +31,7 @@ export class InMemoryCacheProvider implements ICacheProvider {
   async has(key: string): Promise<boolean> {
     try {
       const value = await this.cacheManager.get(key);
-      return value !== undefined;
+      return value !== undefined && value !== null;
     } catch (error) {
       this.logger.error(`Error checking cache key ${key}:`, error);
       return false;
@@ -40,7 +40,7 @@ export class InMemoryCacheProvider implements ICacheProvider {
 
   async set<T>(key: string, value: T): Promise<void> {
     try {
-      await this.cacheManager.set(key, value, config.ttl);
+      await this.cacheManager.set(key, value, config.ttl * 1000);
       this.logger.debug(`Cache SET: ${key} (TTL: ${config.ttl}s)`);
     } catch (error) {
       this.logger.error(`Error setting cache key ${key}:`, error);

@@ -5,8 +5,7 @@ import { envValidationSchema } from './config/validation';
 import { HttpModule } from '@nestjs/axios';
 import { CepModule } from './cep/cep.module';
 import { HealthModule } from './health/health.module';
-import { CacheModule as CacheOtherProviders } from './cache/cache.module';
-import { CacheModule } from '@nestjs/cache-manager';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -23,11 +22,8 @@ import { CacheModule } from '@nestjs/cache-manager';
         maxRedirects: 0,
       }),
     }),
-    CacheOtherProviders,
+    CacheModule,
     HealthModule,
-    CacheModule.register({
-      max: 1000,
-    }),
   ],
   controllers: [],
   providers: [],
