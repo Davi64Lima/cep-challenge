@@ -4,7 +4,10 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, timeout, catchError } from 'rxjs';
 import { AxiosError } from 'axios';
 import { ICepProvider } from '../interfaces/cep-provider.interface';
-import { AddressResponseDto } from '../../common/dto/address-response.dto';
+import {
+  AddressResponseDto,
+  AddressResponseProviderDto,
+} from '../../common/dto/address-response.dto';
 import { CepException } from '../err/cep-exception';
 import { ErrorCode } from '../../common/dto/error-response.dto';
 
@@ -43,7 +46,7 @@ export class ViaCepProvider implements ICepProvider {
     );
   }
 
-  async findByCep(cep: string): Promise<AddressResponseDto> {
+  async findByCep(cep: string): Promise<AddressResponseProviderDto> {
     const url = `${this.baseURL}/${cep}/json/`;
 
     this.logger.debug(`Consultando ViaCEP: ${url}`);
@@ -87,9 +90,9 @@ export class ViaCepProvider implements ICepProvider {
     }
   }
 
-  private mapToUnifiedFormat(data: ViaCepResponse): AddressResponseDto {
+  private mapToUnifiedFormat(data: ViaCepResponse): AddressResponseProviderDto {
     return {
-      cep: data.cep,
+      cep: data.cep.replace('-', ''),
       street: data.logradouro,
       complement: data.complemento || null,
       neighborhood: data.bairro,

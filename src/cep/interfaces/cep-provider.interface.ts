@@ -1,4 +1,4 @@
-import { AddressResponseDto } from '../../common/dto/address-response.dto';
+import { AddressResponseProviderDto } from '../../common/dto/address-response.dto';
 
 export interface ICepProvider {
   /**
@@ -12,7 +12,7 @@ export interface ICepProvider {
    * @returns Dados do endereço no formato unificado
    * @throws CepException com código apropriado (CEP_NOT_FOUND, UPSTREAM_UNAVAILABLE, GATEWAY_TIMEOUT)
    */
-  findByCep(cep: string): Promise<AddressResponseDto>;
+  findByCep(cep: string): Promise<AddressResponseProviderDto>;
 
   /**
    * Verifica se o provedor está disponível

@@ -1,5 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export class AddressResponseProviderDto {
+  cep: string;
+
+  street: string;
+
+  complement?: string | null;
+
+  neighborhood: string;
+
+  city: string;
+
+  state: string;
+
+  ibgeCode?: string | null;
+
+  giaCode?: string | null;
+
+  dddCode?: string | null;
+
+  siafiCode?: string | null;
+}
+
 export class AddressResponseDto {
   @ApiProperty({
     description: 'CEP formatado (com ou sem hífen)',
@@ -82,4 +104,18 @@ export class AddressResponseDto {
     type: String,
   })
   siafiCode?: string | null;
+
+  @ApiProperty({
+    description: 'Informações adicionais do provedor (se disponíveis)',
+    example: 'ViaCEP',
+    nullable: true,
+  })
+  source: string | null;
+
+  @ApiProperty({
+    description: 'Timestamp da consulta',
+    example: '2025-10-07T10:30:00.000Z',
+    nullable: true,
+  })
+  fetched_at: Date | null;
 }

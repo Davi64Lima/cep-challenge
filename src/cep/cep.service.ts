@@ -71,7 +71,11 @@ export class CepService {
           `CEP ${cep} gravado no cache (TTL: ${this.CACHE_TTL}s)`,
         );
 
-        return result;
+        return {
+          ...result,
+          source: 'viacep',
+          fetched_at: new Date(),
+        };
       } catch (error) {
         if (error instanceof CepException) {
           const errorResponse = error.getResponse() as any;

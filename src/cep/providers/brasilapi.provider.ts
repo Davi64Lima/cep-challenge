@@ -4,7 +4,10 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, timeout, catchError } from 'rxjs';
 import { AxiosError } from 'axios';
 import { ICepProvider } from '../interfaces/cep-provider.interface';
-import { AddressResponseDto } from '../../common/dto/address-response.dto';
+import {
+  AddressResponseDto,
+  AddressResponseProviderDto,
+} from '../../common/dto/address-response.dto';
 import { CepException } from '../err/cep-exception';
 import { ErrorCode } from '../../common/dto/error-response.dto';
 
@@ -45,7 +48,7 @@ export class BrasilApiProvider implements ICepProvider {
     );
   }
 
-  async findByCep(cep: string): Promise<AddressResponseDto> {
+  async findByCep(cep: string): Promise<AddressResponseProviderDto> {
     const url = `${this.baseURL}/${cep}`;
 
     this.logger.debug(`Consultando BrasilAPI: ${url}`);
@@ -77,9 +80,11 @@ export class BrasilApiProvider implements ICepProvider {
     }
   }
 
-  private mapToUnifiedFormat(data: BrasilApiResponse): AddressResponseDto {
+  private mapToUnifiedFormat(
+    data: BrasilApiResponse,
+  ): AddressResponseProviderDto {
     return {
-      cep: data.cep,
+      cep: data.cep.replace('-', ''),
       street: data.street,
       complement: null,
       neighborhood: data.neighborhood,
