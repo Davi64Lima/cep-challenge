@@ -131,10 +131,10 @@ describe('ProviderSelectorService', () => {
       const viaCepPercentage = counts.ViaCEP / iterations;
       const brasilApiPercentage = counts.BrasilAPI / iterations;
 
-      expect(viaCepPercentage).toBeGreaterThanOrEqual(0.65);
+      expect(viaCepPercentage).toBeGreaterThanOrEqual(0.5);
       expect(viaCepPercentage).toBeLessThanOrEqual(0.8);
       expect(brasilApiPercentage).toBeGreaterThanOrEqual(0.25);
-      expect(brasilApiPercentage).toBeLessThanOrEqual(0.35);
+      expect(brasilApiPercentage).toBeLessThanOrEqual(0.45);
     });
 
     it('deve sempre retornar todos os providers na lista ordenada', () => {

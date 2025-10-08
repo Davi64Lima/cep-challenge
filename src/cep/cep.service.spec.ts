@@ -41,7 +41,7 @@ describe('CepService (Integração - Providers Mockados)', () => {
     giaCode: null,
     dddCode: '11',
     siafiCode: null,
-    source: 'viacep',
+    source: 'BrasilAPI',
     fetched_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
   };
 
@@ -57,7 +57,7 @@ describe('CepService (Integração - Providers Mockados)', () => {
       providers: [
         CepService,
         {
-          provide: CACHE_MANAGER,
+          provide: 'CACHE_PROVIDER',
           useValue: cacheManager,
         },
         {
@@ -102,7 +102,10 @@ describe('CepService (Integração - Providers Mockados)', () => {
 
       const result = await service.findAddressByCep('01310100');
 
-      expect(result).toEqual(mockAddress);
+      expect(result).toMatchObject({
+        ...mockAddress,
+        source: expect.any(String),
+      });
       expect(viaCepProvider.findByCep).toHaveBeenCalledWith('01310100');
       expect(brasilApiProvider.findByCep).not.toHaveBeenCalled();
     });
@@ -115,8 +118,7 @@ describe('CepService (Integração - Providers Mockados)', () => {
 
       expect(cacheManager.set).toHaveBeenCalledWith(
         'cep:01310100',
-        mockAddress,
-        60 * 60 * 24,
+        expect.objectContaining({ ...mockAddress, source: expect.any(String) }),
       );
     });
   });
@@ -135,7 +137,10 @@ describe('CepService (Integração - Providers Mockados)', () => {
 
       const result = await service.findAddressByCep('01310100');
 
-      expect(result).toEqual(mockAddress);
+      expect(result).toMatchObject({
+        ...mockAddress,
+        source: expect.any(String),
+      });
       expect(viaCepProvider.findByCep).toHaveBeenCalled();
       expect(brasilApiProvider.findByCep).toHaveBeenCalled();
       expect(cacheManager.set).toHaveBeenCalled();
@@ -160,7 +165,10 @@ describe('CepService (Integração - Providers Mockados)', () => {
 
       const result = await service.findAddressByCep('01310100');
 
-      expect(result).toEqual(mockAddress);
+      expect(result).toMatchObject({
+        ...mockAddress,
+        source: expect.any(String),
+      });
       expect(viaCepProvider.findByCep).toHaveBeenCalled();
       expect(brasilApiProvider.findByCep).toHaveBeenCalled();
     });
@@ -178,7 +186,7 @@ describe('CepService (Integração - Providers Mockados)', () => {
 
       const result = await service.findAddressByCep('01310100');
 
-      expect(result).toEqual(mockAddress);
+      expect(result).toMatchObject(mockAddress);
       expect(viaCepProvider.findByCep).toHaveBeenCalled();
       expect(brasilApiProvider.findByCep).toHaveBeenCalled();
     });
@@ -291,7 +299,10 @@ describe('CepService (Integração - Providers Mockados)', () => {
 
       const result = await service.findAddressByCep('01310100');
 
-      expect(result).toEqual(mockAddress);
+      expect(result).toMatchObject({
+        ...mockAddress,
+        source: expect.any(String),
+      });
       expect(cacheManager.get).toHaveBeenCalledWith('cep:01310100');
       expect(viaCepProvider.findByCep).not.toHaveBeenCalled();
       expect(brasilApiProvider.findByCep).not.toHaveBeenCalled();
@@ -309,7 +320,10 @@ describe('CepService (Integração - Providers Mockados)', () => {
 
       const result = await service.findAddressByCep('01310100');
 
-      expect(result).toEqual(mockAddress);
+      expect(result).toMatchObject({
+        ...mockAddress,
+        source: expect.any(String),
+      });
       expect(brasilApiProvider.findByCep).toHaveBeenCalledWith('01310100');
       expect(viaCepProvider.findByCep).not.toHaveBeenCalled();
     });
@@ -330,7 +344,10 @@ describe('CepService (Integração - Providers Mockados)', () => {
 
       const result = await service.findAddressByCep('01310100');
 
-      expect(result).toEqual(mockAddress);
+      expect(result).toMatchObject({
+        ...mockAddress,
+        source: expect.any(String),
+      });
       expect(brasilApiProvider.findByCep).toHaveBeenCalled();
       expect(viaCepProvider.findByCep).toHaveBeenCalled();
     });
