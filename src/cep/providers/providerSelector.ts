@@ -51,7 +51,6 @@ export class ProviderSelectorService {
 
     this.requestCount++;
 
-    // Calcular peso total
     const totalWeight = providersWithWeights.reduce(
       (sum, p) => sum + p.weight,
       0,

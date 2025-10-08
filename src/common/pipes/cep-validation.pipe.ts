@@ -14,7 +14,6 @@ export class CepValidationPipe implements PipeTransform<string, string> {
       );
     }
 
-    // Remover espaços em branco
     const trimmedValue = value.trim();
 
     // Validar formato

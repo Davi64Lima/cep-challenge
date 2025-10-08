@@ -21,7 +21,7 @@ export class CepException extends HttpException {
       code,
       message,
       details: details || null,
-      request_id: '', // Será preenchido pelo HttpExceptionFilter
+      request_id: '',
     };
 
     super(errorResponse, status);

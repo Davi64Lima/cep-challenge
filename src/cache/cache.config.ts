@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 export interface CacheConfig {
   type: 'memory' | 'redis';
   memory?: { cache: typeof CACHE_MANAGER };
-  ttl: number; // Time to live in seconds
+  ttl: number;
   redis?: {
     host: string;
     port: number;
@@ -16,7 +16,7 @@ export interface CacheConfig {
 export const defaultCacheConfig: CacheConfig = {
   type: (process.env.CACHE_TYPE as 'memory' | 'redis') || 'memory',
   memory: { cache: CACHE_MANAGER },
-  ttl: parseInt(process.env.CACHE_TTL || '300'), // 5 minutes default
+  ttl: parseInt(process.env.CACHE_TTL || '300'),
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379'),

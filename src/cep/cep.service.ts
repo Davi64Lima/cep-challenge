@@ -11,6 +11,7 @@ import { CepException } from './err/cep-exception';
 import { ErrorCode } from '../common/dto/error-response.dto';
 import { ICepProvider } from './interfaces/cep-provider.interface';
 import { ICacheProvider } from '../cache/interfaces/cache-provider.interface';
+import { Err } from 'joi';
 
 interface ProviderError {
   provider: string;
