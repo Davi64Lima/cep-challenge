@@ -1,0 +1,32 @@
+services:
+  api:
+    build:
+      context: .
+      target: production
+    image: cep-service:latest
+    env_file:
+      - ./.env
+    ports:
+      - '${PORT:-3000}:3000'
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://localhost:3000${HEALTH_PATH:-/health} || exit 1',
+        ]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    # depends_on:
+    # - redis
+    # Se você NÃO for usar Redis, defina ENABLE_REDIS_CACHE=false e remova depends_on acima.
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    command: ['redis-server', '--appendonly', 'no']
+    restart: unless-stopped
+    profiles: ['redis']
