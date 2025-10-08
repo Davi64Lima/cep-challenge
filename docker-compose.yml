@@ -4,6 +4,9 @@ services:
       context: .
       target: production
     image: cep-service:latest
+    environment:
+      - CACHE_PROVIDER=redis
+      - REDIS_URL=redis://redis:6379
     env_file:
       - ./.env
     ports:
@@ -19,9 +22,8 @@ services:
       timeout: 3s
       retries: 5
       start_period: 10s
-    # depends_on:
-    # - redis
-    # Se você NÃO for usar Redis, defina ENABLE_REDIS_CACHE=false e remova depends_on acima.
+    depends_on:
+      - redis
 
   redis:
     image: redis:7-alpine
@@ -29,4 +31,4 @@ services:
       - '6379:6379'
     command: ['redis-server', '--appendonly', 'no']
     restart: unless-stopped
-    profiles: ['redis']
+    # Removido o profiles para habilitar o Redis por padrão
