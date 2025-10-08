@@ -4,11 +4,11 @@ services:
       context: .
       target: production
     image: cep-service:latest
+    env_file:
+      - ./.env
     environment:
       - CACHE_PROVIDER=redis
       - REDIS_URL=redis://redis:6379
-    env_file:
-      - ./.env
     ports:
       - '${PORT:-3000}:3000'
     restart: unless-stopped
@@ -31,4 +31,3 @@ services:
       - '6379:6379'
     command: ['redis-server', '--appendonly', 'no']
     restart: unless-stopped
-    # Removido o profiles para habilitar o Redis por padrão

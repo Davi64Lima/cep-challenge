@@ -8,9 +8,7 @@ dist
 coverage
 
 # Env
-.env
-.env.*
-!.env.example
+
 
 # Docker
 Dockerfile.*
