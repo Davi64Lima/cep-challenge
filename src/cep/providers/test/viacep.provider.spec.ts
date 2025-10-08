@@ -46,7 +46,7 @@ describe('ViaCepProvider (Unitário - Adapter)', () => {
     it('deve mapear resposta do ViaCEP para formato unificado', async () => {
       const mockResponse: AxiosResponse = {
         data: {
-          cep: '01310-100',
+          cep: '01310100',
           logradouro: 'Avenida Paulista',
           complemento: 'de 612 a 1510 - lado par',
           bairro: 'Bela Vista',
@@ -68,7 +68,7 @@ describe('ViaCepProvider (Unitário - Adapter)', () => {
       const result = await provider.findByCep('01310100');
 
       expect(result).toEqual({
-        cep: '01310-100',
+        cep: '01310100',
         street: 'Avenida Paulista',
         complement: 'de 612 a 1510 - lado par',
         neighborhood: 'Bela Vista',

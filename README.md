@@ -1,98 +1,526 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏢 CEP Challenge API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+[![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> API REST robusta para consulta de CEP brasileiro com alternância aleatória entre provedores, fallback automático, cache inteligente e resiliência completa.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📋 Índice
 
-## Project setup
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Características](#-características)
+- [Arquitetura](#️-arquitetura)
+- [Tecnologias](#️-tecnologias)
+- [Instalação](#-instalação)
+- [Uso](#-uso)
+- [Testes](#-testes)
+- [API Endpoints](#-api-endpoints)
+- [Tratamento de Erros](#️-tratamento-de-erros)
+- [Variáveis de Ambiente](#-variáveis-de-ambiente)
+- [Docker](#-docker)
+- [Roadmap](#️-roadmap)
+- [Licença](#-licença)
 
-```bash
-$ yarn install
+---
+
+## 🎯 Sobre o Projeto
+
+API desenvolvida em **NestJS** que resolve o desafio de consultar CEPs brasileiros com alta disponibilidade e performance. Implementa estratégias avançadas de resiliência, incluindo:
+
+- ✅ **Alternância aleatória** entre provedores (ViaCEP 70% / BrasilAPI 30%)
+- ✅ **Fallback automático** em caso de falha
+- ✅ **Cache inteligente** com TTL de 24 horas
+- ✅ **Tratamento granular** de erros (404, 5xx, timeout)
+- ✅ **Validação robusta** de CEP
+- ✅ **Documentação Swagger** interativa
+- ✅ **Health checks** completos
+- ✅ **Request ID** para rastreabilidade
+
+---
+
+## ✨ Características
+
+### 🔄 Distribuição de Carga Inteligente
+
+```
+70% → ViaCEP (provider primário)
+30% → BrasilAPI (provider secundário)
 ```
 
-## Compile and run the project
+- Seleção **probabilística** baseada em pesos configuráveis
+- Ordem de fallback automática em caso de falha
+- Logs detalhados de cada tentativa
 
-```bash
-# development
-$ yarn run start
+### 🛡️ Resiliência Multi-Camada
 
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+```
+Request → Validação → Cache? → Provider 1 → Provider 2 → Erro 404/503/504
+                 ↓               ↓              ↓
+              Cache Hit      Success        Success
 ```
 
-## Run tests
+**Estratégias implementadas:**
 
-```bash
-# unit tests
-$ yarn run test
+- ✅ Timeout configurável por provider (5s default)
+- ✅ Diferenciação de erros (404 vs 5xx vs timeout)
+- ✅ Fallback em cascata (até esgotar todos os providers)
+- ✅ Cache para reduzir chamadas externas
 
-# e2e tests
-$ yarn run test:e2e
+### 📊 Tratamento de Erros Padronizado
 
-# test coverage
-$ yarn run test:cov
+Todos os erros seguem o formato **RFC 7807** (Problem Details):
+
+```json
+{
+  "code": "CEP_NOT_FOUND",
+  "message": "CEP não encontrado em nenhum dos provedores disponíveis",
+  "details": {
+    "cep": "99999999",
+    "attempts": 2,
+    "providers": ["ViaCEP", "BrasilAPI"]
+  },
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": "2025-01-07T10:30:00.000Z",
+  "path": "/api/v1/cep/99999999"
+}
 ```
 
-## Deployment
+### 🚀 Performance e Cache
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- **Cache em memória** com `cache-manager`
+- **TTL padrão:** 24 horas (configurável via `.env`)
+- **Máximo de itens:** 1000 (evita memory leak)
+- **Hit rate esperado:** ~80% após warm-up
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
 
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+## 🏗️ Arquitetura
+
+### Diagrama de Fluxo
+
+```
+┌─────────────┐
+│   Client    │
+└──────┬──────┘
+       │ GET /api/v1/cep/01310100
+       ▼
+┌─────────────────────────────────────────────┐
+│          CepController                      │
+│  - Validação (CepValidationPipe)           │
+│  - Normalização (remove hífen)              │
+└──────┬──────────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────────┐
+│          CepService                         │
+│  1. Consulta cache                          │
+│  2. Cache miss? → Seleciona providers       │
+│  3. Tenta provider primário                 │
+│  4. Falha? → Tenta secundário               │
+│  5. Sucesso? → Grava no cache               │
+└──────┬──────────────────────────────────────┘
+       │
+       ├─────────────────┬────────────────────┐
+       ▼                 ▼                    ▼
+┌──────────────┐  ┌──────────────┐   ┌──────────────┐
+│ ViaCepProvider│  │BrasilApiProv.│   │   (Futuro)   │
+│   (70%)      │  │   (30%)      │   │  OutroProvider│
+└──────────────┘  └──────────────┘   └──────────────┘
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Camadas da Aplicação
 
-## Resources
+```
+src/
+├── app.module.ts              # Módulo raiz
+├── main.ts                    # Bootstrap da aplicação
+│
+├── cep/                       # Módulo de CEP (feature)
+│   ├── cep.controller.ts      # Endpoints REST
+│   ├── cep.service.ts         # Lógica de negócio
+│   ├── cep.module.ts          # Configuração do módulo
+│   │
+│   ├── providers/             # Adapters para APIs externas
+│   │   ├── viacep.provider.ts
+│   │   ├── brasilapi.provider.ts
+│   │   └── providerSelector.ts # Estratégia de seleção
+│   │
+│   ├── interfaces/            # Contratos
+│   │   └── cep-provider.interface.ts
+│   │
+│   └── err/                   # Exceções customizadas
+│       └── cep-exception.ts
+│
+├── common/                    # Código compartilhado
+│   ├── dto/                   # Data Transfer Objects
+│   ├── pipes/                 # Validação
+│   ├── interceptors/          # Request ID, Logging
+│   └── filter/                # Exception Filter global
+│
+├── config/                    # Configurações
+│   ├── configuration.ts       # Variáveis de ambiente
+│   ├── validation.ts          # Schema Joi
+│   └── provider.config.ts     # Config dos providers
+│
+├── health/                    # Health checks
+│   └── health.controller.ts
+│
+└── swagger/                   # Documentação API
+    └── swagger.config.ts
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 🛠️ Tecnologias
 
-## Support
+| Tecnologia        | Versão | Uso                    |
+| ----------------- | ------ | ---------------------- |
+| **NestJS**        | ^11.0  | Framework principal    |
+| **TypeScript**    | ^5.7   | Linguagem              |
+| **Axios**         | ^1.12  | HTTP client            |
+| **RxJS**          | ^7.8   | Programação reativa    |
+| **Cache Manager** | ^7.2   | Cache em memória       |
+| **Swagger**       | ^11.2  | Documentação API       |
+| **Joi**           | ^18.0  | Validação de env       |
+| **Jest**          | ^29.7  | Testes unitários       |
+| **Nock**          | ^14.0  | Mock HTTP (testes E2E) |
+| **Docker**        | -      | Containerização        |
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## 📦 Instalação
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Pré-requisitos
 
-## License
+- **Node.js** >= 18.x
+- **Yarn** ou **npm**
+- **Docker** (opcional)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Passos
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/Davi64lima/cep-challenge.git
+cd cep-challenge
+
+# 2. Instale as dependências
+yarn install
+# ou
+npm install
+
+# 3. Configure as variáveis de ambiente
+cp .env.example .env
+
+# 4. (Opcional) Ajuste as configurações em .env
+# PORT, CACHE_TTL_SEC, HTTP_TIMEOUT_MS, etc.
+```
+
+---
+
+## 🚀 Uso
+
+### Desenvolvimento
+
+```bash
+# Modo watch (hot reload)
+yarn start:dev
+
+# Acessar aplicação
+http://localhost:3000
+
+# Acessar Swagger
+http://localhost:3000/docs
+
+# Health check
+http://localhost:3000/health
+```
+
+### Produção
+
+```bash
+# Build
+yarn build
+
+# Executar
+yarn start:prod
+
+# ou
+node dist/main.js
+```
+
+---
+
+## 🧪 Testes
+
+### Estrutura de Testes
+
+```
+test/
+├── app.e2e-spec.ts                    # Testes E2E (nock)
+│
+src/
+├── cep/
+│   ├── cep.service.spec.ts            # Testes de integração
+│   └── providers/test/
+│       ├── viacep.provider.spec.ts    # Testes unitários
+│       ├── brasilapi.provider.spec.ts
+│       └── providerSelector.spec.ts
+│
+└── common/pipes/
+    └── cep-validation.pipe.spec.ts    # Testes de validação
+```
+
+### Comandos
+
+```bash
+# Testes unitários
+yarn test
+
+# Testes E2E
+yarn test:e2e
+
+# Coverage
+yarn test:cov
+
+# Watch mode
+yarn test:watch
+```
+
+### Exemplos de Testes
+
+**Teste E2E com Nock:**
+
+```typescript
+it('deve fazer fallback para BrasilAPI quando ViaCEP falha', async () => {
+  nock('https://viacep.com.br')
+    .get('/ws/01310100/json/')
+    .reply(503, 'Service Unavailable');
+
+  nock('https://brasilapi.com.br')
+    .get('/api/cep/v1/01310100')
+    .reply(200, { cep: '01310100', street: 'Avenida Paulista', ... });
+
+  await request(app.getHttpServer())
+    .get('/api/v1/cep/01310100')
+    .expect(200);
+});
+```
+
+**Teste Unitário com Mock Determinístico:**
+
+```typescript
+it('deve selecionar ViaCEP quando random < 0.7', () => {
+  const mockRandom = jest.fn().mockReturnValue(0.3);
+  providerSelector.setRandomGenerator(mockRandom);
+
+  const result = providerSelector.selectProviders([
+    { provider: viaCep, weight: 70 },
+    { provider: brasilApi, weight: 30 },
+  ]);
+
+  expect(result.ordered[0].name).toBe('ViaCEP');
+});
+```
+
+---
+
+## 📡 API Endpoints
+
+### Base URL
+
+```
+http://localhost:3000
+```
+
+### Endpoints
+
+#### `GET /api/v1/cep/:cep`
+
+Consulta endereço por CEP.
+
+**Request:**
+
+```bash
+curl -X GET http://localhost:3000/api/v1/cep/01310-100
+```
+
+**Response 200 (Sucesso):**
+
+```json
+{
+  "cep": "01310-100",
+  "street": "Avenida Paulista",
+  "complement": "de 612 a 1510 - lado par",
+  "neighborhood": "Bela Vista",
+  "city": "São Paulo",
+  "state": "SP",
+  "source": "viacep",
+  "fetched_at": "2025-10-08T14:30:00.000Z"
+}
+```
+
+**Response 400 (CEP Inválido):**
+
+```json
+{
+  "code": "INVALID_CEP",
+  "message": "CEP inválido. O CEP deve conter 8 dígitos numéricos.",
+  "details": {
+    "received": "abc123",
+    "expectedFormat": "12345-678 ou 12345678"
+  },
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": "2025-10-08T10:30:00.000Z",
+  "path": "/api/v1/cep/abc123"
+}
+```
+
+#### `GET /health`
+
+Verifica saúde da aplicação e dependências.
+
+**Response:**
+
+```json
+{
+  "status": "ok",
+  "info": {
+    "viacep": { "status": "up" },
+    "brasilapi": { "status": "up" },
+    "memory_heap": { "status": "up" },
+    "memory_rss": { "status": "up" }
+  }
+}
+```
+
+#### `GET /docs`
+
+Documentação Swagger interativa.
+
+---
+
+## ⚠️ Tratamento de Erros
+
+### Códigos de Erro
+
+| Código                 | HTTP Status | Descrição                | Ação             |
+| ---------------------- | ----------- | ------------------------ | ---------------- |
+| `INVALID_CEP`          | 400         | CEP com formato inválido | Corrigir formato |
+| `CEP_NOT_FOUND`        | 404         | CEP não existe           | Verificar CEP    |
+| `UPSTREAM_UNAVAILABLE` | 503         | Providers indisponíveis  | Tentar novamente |
+| `GATEWAY_TIMEOUT`      | 504         | Timeout nos providers    | Tentar novamente |
+
+### Fluxo de Decisão de Erro
+
+```
+Provider 1 falha → Código?
+  ├─ CEP_NOT_FOUND (404) → Tentar Provider 2
+  ├─ GATEWAY_TIMEOUT     → Tentar Provider 2
+  └─ UPSTREAM_UNAVAILABLE (5xx) → Tentar Provider 2
+
+Ambos falharam → Qual erro predominante?
+  ├─ Todos 404 → Retornar CEP_NOT_FOUND
+  ├─ Algum timeout → Retornar GATEWAY_TIMEOUT
+  └─ Resto → Retornar UPSTREAM_UNAVAILABLE
+```
+
+---
+
+## 🔧 Variáveis de Ambiente
+
+```bash
+# Aplicação
+PORT=3000                          # Porta da aplicação
+NODE_ENV=development               # Ambiente (development | test | production)
+
+# ViaCEP
+VIACEP_BASE_URL=https://viacep.com.br/ws
+VIACEP_TIMEOUT=5000               # Timeout em ms
+VIACEP_RETRIES=0                  # Tentativas de retry
+
+# BrasilAPI
+BRASILAPI_BASE_URL=https://brasilapi.com.br/api/cep/v1
+BRASILAPI_TIMEOUT=5000
+BRASILAPI_RETRIES=0
+
+# HTTP Client
+HTTP_TIMEOUT_MS=2000              # Timeout global
+
+# Cache
+ENABLE_CACHE=true                 # Ativar/desativar cache
+CACHE_TTL_SEC=900                 # TTL do cache (15min)
+
+# Observabilidade
+LOG_LEVEL=info                    # fatal | error | warn | info | debug | trace
+REQUEST_ID_HEADER=x-request-id    # Header para request ID
+
+# Swagger
+ENABLE_SWAGGER=true               # Ativar/desativar Swagger
+SWAGGER_PATH=/docs                # Caminho do Swagger
+
+# Health
+HEALTH_PATH=/health               # Caminho do health check
+```
+
+---
+
+## 🐳 Docker
+
+### Build e execução
+
+```bash
+# Build da imagem
+docker build -t cep-challenge .
+
+# Executar container
+docker run -p 3000:3000 --env-file .env cep-challenge
+```
+
+### Docker Compose
+
+```bash
+# Subir aplicação
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Parar
+docker-compose down
+```
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] **Adicionar novos providers** (ApiCEP, PostMon)
+- [ ] **Implementar Redis** para cache distribuído
+- [ ] **Métricas Prometheus** para monitoramento
+- [ ] **Rate limiting** por IP
+- [ ] **Circuit breaker** para providers
+- [ ] **Retry exponencial** com backoff
+- [ ] **GraphQL** como alternativa ao REST
+- [ ] **Webhooks** para notificações de falha
+- [ ] **Admin dashboard** para métricas
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença **MIT**. Veja o arquivo LICENSE para mais detalhes.
+
+---
+
+## 👤 Autor
+
+**Davi Lima**
+
+- GitHub: [@Davi64lima](https://github.com/Davi64lima)
+- Email: devdavi64lima@gmail.com
+- LinkedIn: [Davi Lima](https://linkedin.com/in/davi64lima)
+
+---

@@ -74,7 +74,7 @@ export class CepService {
         return {
           ...result,
           source: 'viacep',
-          fetched_at: new Date(),
+          fetched_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
         };
       } catch (error) {
         if (error instanceof CepException) {

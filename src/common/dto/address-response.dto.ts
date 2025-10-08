@@ -114,8 +114,8 @@ export class AddressResponseDto {
 
   @ApiProperty({
     description: 'Timestamp da consulta',
-    example: '2025-10-07T10:30:00.000Z',
+    example: '2025-10-07 10:30:00',
     nullable: true,
   })
-  fetched_at: Date | null;
+  fetched_at: Date | string | null;
 }

@@ -6,7 +6,10 @@ import { ViaCepProvider } from './providers/viacep.provider';
 import { BrasilApiProvider } from './providers/brasilapi.provider';
 import { CepException } from './err/cep-exception';
 import { ErrorCode } from '../common/dto/error-response.dto';
-import { AddressResponseDto } from '../common/dto/address-response.dto';
+import {
+  AddressResponseDto,
+  AddressResponseProviderDto,
+} from '../common/dto/address-response.dto';
 
 describe('CepService (Integração - Providers Mockados)', () => {
   let service: CepService;
@@ -14,6 +17,19 @@ describe('CepService (Integração - Providers Mockados)', () => {
   let brasilApiProvider: BrasilApiProvider;
   let providerSelector: ProviderSelectorService;
   let cacheManager: any;
+
+  const mockAddressProvider: AddressResponseProviderDto = {
+    cep: '01310-100',
+    street: 'Avenida Paulista',
+    complement: null,
+    neighborhood: 'Bela Vista',
+    city: 'São Paulo',
+    state: 'SP',
+    ibgeCode: '3550308',
+    giaCode: null,
+    dddCode: '11',
+    siafiCode: null,
+  };
 
   const mockAddress: AddressResponseDto = {
     cep: '01310-100',
@@ -26,6 +42,8 @@ describe('CepService (Integração - Providers Mockados)', () => {
     giaCode: null,
     dddCode: '11',
     siafiCode: null,
+    source: 'viacep',
+    fetched_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
   };
 
   beforeEach(async () => {
